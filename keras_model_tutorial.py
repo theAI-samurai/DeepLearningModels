@@ -2,6 +2,8 @@
 Objective: To seperate the given images into training and testing dataset
 build a classification network
 find the confusion matrix
+
+The image dataset can be downloaded from https://drive.google.com/file/d/18-XchvcQcmLMkNXNoiFruZfx340hnaUR/view?usp=sharing
 '''
 
 import os
@@ -18,11 +20,10 @@ from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 
 # Path for images
-#path = '/home/ankit/Downloads/DeepModels_Python/'
-path = 'D:/Dataset/siemens/'
+path = '/home/ankit/DeepModels_Python/'
 
 #reading the csv
-df_label = pd.read_csv(path+'traininglabels.csv')
+df_label = pd.read_csv(path+'map_traininglabels.csv')
 categories = (df_label['Class'].unique())  #gives us total number of classes=2(here)
 print(categories)
 count = df_label['Class'].value_counts()   #gives number of images in each class
@@ -38,7 +39,7 @@ def seperating_class_dir(df):
         if df.loc[i,'Class']==1:
             if not os.path.exists(path+'1'):
                 os.mkdir(path+'1')
-            temp = cv2.imread(path+'images/'+df.loc[i,'image_id'])
+            temp = cv2.imread(path+'map_images/'+df.loc[i,'image_id'])
 
             cv2.imwrite((path+'1/'+df.loc[i,'image_id']), temp)
         else:
@@ -75,7 +76,6 @@ y = np.array(df_label['Class'])
 
 X_train, X_test, y_train, y_test = train_test_split(img_lst, y, test_size=0.25)
 
-
 # Testing display of Image
 #cv2.imshow('win',img_lst[0])
     
@@ -95,7 +95,6 @@ model.summary()
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
 model.fit(X_train, y_train, epochs=2, batch_size=2)
-
 
 # evaluate the model
 scores = model.evaluate(X_test, y_test, verbose=0)
