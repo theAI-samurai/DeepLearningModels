@@ -18,10 +18,11 @@ from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 
 # Path for images
+#path = '/home/ankit/Downloads/DeepModels_Python/'
 path = 'D:/Dataset/siemens/'
 
 #reading the csv
-df_label= pd.read_csv(path+'traininglabels.csv')
+df_label = pd.read_csv(path+'traininglabels.csv')
 categories = (df_label['Class'].unique())  #gives us total number of classes=2(here)
 print(categories)
 count = df_label['Class'].value_counts()   #gives number of images in each class
@@ -76,28 +77,37 @@ X_train, X_test, y_train, y_test = train_test_split(img_lst, y, test_size=0.25)
 
 
 # Testing display of Image
-cv2.imshow('win',img_lst[0])
+#cv2.imshow('win',img_lst[0])
+    
+'''**********************************************
+Keras Neyral Architecture for Training
+********************************************I'''
+model = Sequential()
+model.add(Conv2D(filters=16, kernel_size=(5, 5), activation="relu", input_shape=(256,256,3)))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Conv2D(filters=32, kernel_size=(5, 5), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Flatten())
+model.add(Dense(1, activation='sigmoid'))
+
+model.summary()
+
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+model.fit(X_train, y_train, epochs=2, batch_size=2)
 
 
-def keras_model(img_train,class_train,img_test,class_test):
-    
-    '''**********************************************
-    Keras Neyral Architecture for Training
-    ********************************************I'''
-    model = Sequential()
-    model.add(Conv2D(filters=16, kernel_size=(5, 5), activation="relu", input_shape=(256,256,3)))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Conv2D(filters=32, kernel_size=(5, 5), activation='relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Flatten())
-    model.add(Dense(1, activation='sigmoid'))
-    
-    model.summary()
-    
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-    model.fit(img_train, class_train, epochs=2, validation_data=(img_test, class_test), batch_size=2)
-    
-keras_model(X_train,y_train,X_test,y_test)
+# evaluate the model
+scores = model.evaluate(X_test, y_test, verbose=0)
+
+# serialize weights to HDF5
+model.save_weights(path + "/model.h5")
+print("Saved model to disk")
+predictions = model.predict(X_test)
+predictions = (predictions > 0.5)
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(y_test, predictions)
+
 
 
 
