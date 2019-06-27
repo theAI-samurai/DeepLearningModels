@@ -3,32 +3,31 @@ import os
 from keras.models import Sequential
 from sklearn.model_selection import train_test_split
 import pandas as pd
-from DeepModels_Python.my_classes import DataGenerator
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
+
+os.chdir('D:/myProject/')
+from DeepLearningModels.my_classes import DataGenerator
 
 def path_change(df):
     for i in range(len(df)):
         df.loc[i, 'image_id']= path +'images/'+ df.loc[i, 'image_id']
 
 
-path = '/home/ankit/Downloads/DeepModels_Python/'
+path = 'D:/myProject/DeepLearningModels/'
 df_data = pd.read_csv(path+'map_traininglabels.csv')
 path_change(df_data)
 X_train, X_test, y_train, y_test = train_test_split(df_data['image_id'], df_data['Class'], test_size=0.25)
 
 # Parameters
-params = {'dim': (32,32,32),
-          'batch_size': 64,
-          'n_classes': 2,
-          'n_channels': 3,
-          'shuffle': True}
+params = {'dim': (32,32,32), 'batch_size': 64, 'n_classes': 2, 'n_channels': 3, 'shuffle': True}
 
 # Datasets
-partition = {'train': X_train, 'validation': X_test}
+partition = {'train': X_train.tolist(), 'validation': X_test.tolist()}
 df_ = df_data
 df_ = df_.drop(['score'], 1)
 labels = df_.set_index('image_id').T.to_dict('list')
+del [df_data , df_, X_train, X_test, y_train, y_test]
 
 # Generators
 training_generator = DataGenerator(partition['train'], labels, **params)
@@ -48,36 +47,22 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
 
 # Train model on dataset
 """***************************************************************************
-    def fit_generator(self, generator,
-                      steps_per_epoch=None,
-                      epochs=1,
-                      verbose=1,
-                      callbacks=None,
-                      validation_data=None,
-                      validation_steps=None,
-                      class_weight=None,
-                      max_queue_size=10,
-                      workers=1,
-                      use_multiprocessing=False,
-                      shuffle=True,
-                      initial_epoch=0):
+    def fit_generator(self, generator, steps_per_epoch=None,
+                      epochs=1, verbose=1, callbacks=None,
+                      validation_data=None, validation_steps=None,
+                      class_weight=None, max_queue_size=10,
+                      workers=1, use_multiprocessing=False,
+                      shuffle=True, initial_epoch=0):
     -------------Trains the model on data generated batch-by-batch by a Python generator(or an instance of `Sequence`).
+        The generator is run in parallel to the model, for efficiency. Suited if you have low memory
 
-        The generator is run in parallel to the model, for efficiency.
-        For instance, this allows you to do real-time data augmentation
-        on images on CPU in parallel to training your model on GPU.
-
-        The use of `keras.utils.Sequence` guarantees the ordering
-        and guarantees the single use of every input per epoch when
-        using `use_multiprocessing=True`.
+        The use of `keras.utils.Sequence` guarantees the ordering and guarantees the single use of every input per epoch
+         when using `use_multiprocessing=True`.
 
         # Arguments
-            generator: A generator or an instance of `Sequence`
-                (`keras.utils.Sequence`) object in order to avoid
+        *generator: A generator or an instance of `Sequence`(`keras.utils.Sequence`) object in order to avoid
                 duplicate data when using multiprocessing.
-                The output of the generator must be either
-                - a tuple `(inputs, targets)`
-                - a tuple `(inputs, targets, sample_weights)`.
+                The output of the generator must be either - a tuple `(inputs, targets)` - a tuple `(inputs, targets, sample_weights)`.
                 This tuple (a single output of the generator) makes a single
                 batch. Therefore, all arrays in this tuple must have the same
                 length (equal to the size of this batch). Different batches may
