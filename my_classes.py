@@ -4,8 +4,8 @@ import keras
 
 class DataGenerator(keras.utils.Sequence):
     'Generates data for Keras'
-    def __init__(self, list_IDs, labels, batch_size=32, dim=(32,32,32), n_channels=1,
-                 n_classes=10, shuffle=True):
+    def __init__(self, list_IDs, labels, batch_size=32, dim=(32,32,32), n_channels=3,
+                 n_classes=2, shuffle=True):
         'Initialization'
         self.dim = dim
         self.batch_size = batch_size
