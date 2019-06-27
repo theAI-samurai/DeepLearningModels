@@ -29,12 +29,14 @@ print(categories)
 count = df_label['Class'].value_counts()   #gives number of images in each class
 print(count)
 del [count]
-img_lst=[]
+img_lst = []
+
 
 def seperating_class_dir(df):
-    '''***********************************************
+    """*******************************************************************
     this function segregates the images in folders of respective class
-    ***********************************************'''
+
+    *******************************************************************"""
     for i in range(len(df)):
         if df.loc[i,'Class']==1:
             if not os.path.exists(path+'1'):
@@ -48,6 +50,7 @@ def seperating_class_dir(df):
             temp = cv2.imread(path + 'images/' + df.loc[i, 'image_id'])
             cv2.imwrite((path + '0/' + df.loc[i, 'image_id']), temp)
 
+
 def img_path(df):
     '''***********************************************
     add complete image path to the 'image_id' colcumn in the datframe
@@ -55,6 +58,7 @@ def img_path(df):
     for i in range(len(df)):
         new_path = path+'images/'+df.loc[i,'image_id']
         df.loc[i,'image_id']=new_path
+
 
 def img_val(df):
     '''***********************************************
@@ -71,13 +75,10 @@ img_val(df_label)
 
 # converting list to ndarray
 img_lst = np.array(img_lst)
-
 y = np.array(df_label['Class'])
 
 X_train, X_test, y_train, y_test = train_test_split(img_lst, y, test_size=0.25)
 
-# Testing display of Image
-#cv2.imshow('win',img_lst[0])
     
 '''**********************************************
 Keras Neyral Architecture for Training
@@ -94,7 +95,42 @@ model.summary()
 
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
+'''******************************* model fitting using "model.fit" **************************************************
+-------------Trains the model for a given number of epochs (iterations on a dataset)----------
+model.fit(self,
+            x=None, y=None, batch_size=None,
+            epochs=1, verbose=1, callbacks=None,
+            validation_split=0., validation_data=None,
+            shuffle=True, class_weight=None,
+            sample_weight=None, initial_epoch=0,
+            steps_per_epoch=None,
+            validation_steps=None, **kwargs)
+
+---------
+ # Arguments
+        *x: Numpy array of training data (if the model has a single input), or list of Numpy arrays (if the model has multiple inputs).
+        *y: Numpy array of target/label data (if the model has a single output), or list of Numpy arrays (if the model has multiple outputs).
+        *batch_size: Integer or `None`. Number of samples per gradient update. Default =32
+        *epochs: Integer. Number of epochs to train the model.
+        *verbose: Integer. 0, 1, or 2. Verbosity mode.
+                0 = silent, 1 = progress bar, 2 = one line per epoch.
+        *callbacks: List of `keras.callbacks.Callback` instances.
+        *validation_split: Float between 0 and 1., Fraction of the training data to be used as validation data.
+        *validation_data: tuple `(x_val, y_val)` or tuple `(x_val, y_val, val_sample_weights)` on which to evaluate
+                the loss and any model metrics at the end of each epoch.
+                The model will not be trained on this data.`validation_data` will override `validation_split`.
+        *shuffle: Boolean (whether to shuffle the training data before each epoch) or str (for 'batch').
+                'batch' is a special option for dealing with the limitations of HDF5 data.
+        *class_weight: Optional dictionary mapping class indices (integers) to a weight (float) value,
+        *sample_weight: Optional Numpy array of weights forthe training samples
+        *initial_epoch: Integer. Epoch at which to start training (useful for resuming a previous training run).
+        *steps_per_epoch: Integer or `None`. Total number of steps (batches of samples) before declaring one epoch finished and starting the
+                next epoch.
+        *validation_steps: Only relevant if `steps_per_epoch` is specified. Total number of steps (batches of samples)
+                to validate before stopping.
+'''
 model.fit(X_train, y_train, epochs=2, batch_size=2)
+
 
 # evaluate the model
 scores = model.evaluate(X_test, y_test, verbose=0)
