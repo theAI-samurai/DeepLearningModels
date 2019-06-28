@@ -1,4 +1,3 @@
-
 import os
 from keras.models import Sequential
 from sklearn.model_selection import train_test_split
@@ -63,23 +62,13 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
         *generator: A generator or an instance of `Sequence`(`keras.utils.Sequence`) object in order to avoid
                 duplicate data when using multiprocessing.
                 The output of the generator must be either - a tuple `(inputs, targets)` - a tuple `(inputs, targets, sample_weights)`.
-                This tuple (a single output of the generator) makes a single
-                batch. Therefore, all arrays in this tuple must have the same
-                length (equal to the size of this batch). Different batches may
-                have different sizes. For example, the last batch of the epoch
-                is commonly smaller than the others, if the size of the dataset
-                is not divisible by the batch size.
-                The generator is expected to loop over its data
-                indefinitely. An epoch finishes when `steps_per_epoch`
+                This tuple (a single output of the generator) makes a single batch. Therefore, all arrays in this tuple must have the same
+                length (equal to the size of this batch). Different batches may have different sizes. For example, the last batch of the epoch
+                is commonly smaller than the others, if the size of the dataset is not divisible by the batch size.
+                The generator is expected to loop over its data indefinitely. An epoch finishes when `steps_per_epoch`
                 batches have been seen by the model.
-            steps_per_epoch: Integer.
-                Total number of steps (batches of samples)
-                to yield from `generator` before declaring one epoch
-                finished and starting the next epoch. It should typically
-                be equal to the number of samples of your dataset
-                divided by the batch size.
-                Optional for `Sequence`: if unspecified, will use
-                the `len(generator)` as a number of steps.
+            steps_per_epoch: Integer. Total number of steps (batches of samples) to yield from `generator` before declaring one epoch
+                finished and starting the next epoch. Optional for `Sequence`: if unspecified, will use the `len(generator)` as a number of steps.
             epochs: Integer. Number of epochs to train the model.
                 An epoch is an iteration over the entire data provided,
                 as defined by `steps_per_epoch`.
