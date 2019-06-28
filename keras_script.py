@@ -5,21 +5,22 @@ import pandas as pd
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 
-os.chdir('D:/myProject/')
-from DeepLearningModels.my_classes import DataGenerator
+from my_classes import DataGenerator
+
+
 
 def path_change(df):
     for i in range(len(df)):
         df.loc[i, 'image_id']= path +'images/'+ df.loc[i, 'image_id']
 
 
-path = 'D:/myProject/DeepLearningModels/'
+path = '/home/ankit/Downloads/DeepLearningModels/'
 df_data = pd.read_csv(path+'map_traininglabels.csv')
 path_change(df_data)
 X_train, X_test, y_train, y_test = train_test_split(df_data['image_id'], df_data['Class'], test_size=0.25)
 
 # Parameters
-params = {'dim': (32,32,32), 'batch_size': 64, 'n_classes': 2, 'n_channels': 3, 'shuffle': True}
+params = {'dim': (256, 256), 'batch_size': 8, 'n_classes': 2, 'n_channels': 3, 'shuffle': True}
 
 # Datasets
 partition = {'train': X_train.tolist(), 'validation': X_test.tolist()}
@@ -29,8 +30,9 @@ labels = df_.set_index('image_id').T.to_dict('list')
 del [df_data , df_, X_train, X_test, y_train, y_test]
 
 # Generators
-training_generator = DataGenerator(partition['train'], labels, **params)
-validation_generator = DataGenerator(partition['validation'], labels, **params)
+
+training_generator = DataGenerator(partition['train'], labels, batch_size=8, dim=(256,256), n_channels=3, n_classes=2, shuffle=True)
+validation_generator = DataGenerator(partition['validation'], labels, batch_size=8, dim=(256, 256), n_channels=3, n_classes=2, shuffle=True)
 
 # Design model
 model = Sequential()
@@ -67,61 +69,24 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
                 is commonly smaller than the others, if the size of the dataset is not divisible by the batch size.
                 The generator is expected to loop over its data indefinitely. An epoch finishes when `steps_per_epoch`
                 batches have been seen by the model.
-            steps_per_epoch: Integer. Total number of steps (batches of samples) to yield from `generator` before declaring one epoch
+        *steps_per_epoch: Integer. Total number of steps (batches of samples) to yield from `generator` before declaring one epoch
                 finished and starting the next epoch. Optional for `Sequence`: if unspecified, will use the `len(generator)` as a number of steps.
-            epochs: Integer. Number of epochs to train the model.
-                An epoch is an iteration over the entire data provided,
-                as defined by `steps_per_epoch`.
-                Note that in conjunction with `initial_epoch`,
-                `epochs` is to be understood as "final epoch".
-                The model is not trained for a number of iterations
-                given by `epochs`, but merely until the epoch
-                of index `epochs` is reached.
-            verbose: Integer. 0, 1, or 2. Verbosity mode.
-                0 = silent, 1 = progress bar, 2 = one line per epoch.
-            callbacks: List of `keras.callbacks.Callback` instances.
-                List of callbacks to apply during training.
-                See [callbacks](/callbacks).
-            validation_data: This can be either
-                - a generator or a `Sequence` object for the validation data
-                - tuple `(x_val, y_val)`
-                - tuple `(x_val, y_val, val_sample_weights)`
-                on which to evaluate
-                the loss and any model metrics at the end of each epoch.
-                The model will not be trained on this data.
-            validation_steps: Only relevant if `validation_data`
-                is a generator. Total number of steps (batches of samples)
-                to yield from `validation_data` generator before stopping
-                at the end of every epoch. It should typically
-                be equal to the number of samples of your
-                validation dataset divided by the batch size.
-                Optional for `Sequence`: if unspecified, will use
-                the `len(validation_data)` as a number of steps.
-            class_weight: Optional dictionary mapping class indices (integers)
-                to a weight (float) value, used for weighting the loss function
-                (during training only). This can be useful to tell the model to
-                "pay more attention" to samples
-                from an under-represented class.
-            max_queue_size: Integer. Maximum size for the generator queue.
-                If unspecified, `max_queue_size` will default to 10.
-            workers: Integer. Maximum number of processes to spin up
-                when using process-based threading.
-                If unspecified, `workers` will default to 1. If 0, will
-                execute the generator on the main thread.
-            use_multiprocessing: Boolean.
-                If `True`, use process-based threading.
-                If unspecified, `use_multiprocessing` will default to `False`.
-                Note that because this implementation
-                relies on multiprocessing,
-                you should not pass non-picklable arguments to the generator
+        *epochs: Integer. Number of epochs to train the model. An epoch is an iteration over the entire data provided, as defined by `steps_per_epoch`.
+        *verbose: Integer. 0, 1, or 2. Verbosity mode. 0 = silent, 1 = progress bar, 2 = one line per epoch.
+        *callbacks: List of `keras.callbacks.Callback` instances.
+        *validation_data: This can be either - a generator or a `Sequence` object for the validation data
+                - tuple `(x_val, y_val)`  - tuple `(x_val, y_val, val_sample_weights)` on which to evaluate the loss and any model metrics at the end of each epoch.
+        *validation_steps: Only relevant if `validation_data` is a generator. Total number of steps (batches of samples) to yield from `validation_data` generator before stopping
+                at the end of every epoch. It should typically be equal to the number of samples of your validation dataset divided by the batch size.
+        *class_weight: Optional dictionary mapping class indices (integers) to a weight (float) value, used for weighting the loss function (during training only). 
+        *max_queue_size: Integer. Maximum size for the generator queue. If unspecified, `max_queue_size` will default to 10.
+        *workers: Integer. Maximum number of processes to spin up when using process-based threading.
+                Default = 1. If 0, will execute the generator on the main thread.
+        *use_multiprocessing: Boolean. If `True`, use process-based threading. Default = 'False'
+                Note that because this implementation relies on multiprocessing,you should not pass non-picklable arguments to the generator
                 as they can't be passed easily to children processes.
-            shuffle: Boolean. Whether to shuffle the order of the batches at
-                the beginning of each epoch. Only used with instances
-                of `Sequence` (`keras.utils.Sequence`).
-                Has no effect when `steps_per_epoch` is not `None`.
-            initial_epoch: Integer.
-                Epoch at which to start training
-                (useful for resuming a previous training run).
+        *shuffle: Boolean. Whether to shuffle the order of the batches at the beginning of each epoch. 
+        *initial_epoch: Integer. Epoch at which to start training (useful for resuming a previous training run).
 
         # Returns
             A `History` object. Its `History.history` attribute is
@@ -148,19 +113,9 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
                             steps_per_epoch=10000, epochs=10)
         ```
         
-        return training_generator.fit_generator(
-            self, generator,
-            steps_per_epoch=steps_per_epoch,
-            epochs=epochs,
-            verbose=verbose,
-            callbacks=callbacks,
-            validation_data=validation_data,
-            validation_steps=validation_steps,
-            class_weight=class_weight,
-            max_queue_size=max_queue_size,
-            workers=workers,
-            use_multiprocessing=use_multiprocessing,
-            shuffle=shuffle,
-            initial_epoch=initial_epoch)
+        return training_generator.fit_generator(self, generator, steps_per_epoch=steps_per_epoch,
+            epochs=epochs, verbose=verbose, callbacks=callbacks, validation_data=validation_data,
+            validation_steps=validation_steps, class_weight=class_weight, max_queue_size=max_queue_size,
+            workers=workers, use_multiprocessing=use_multiprocessing, shuffle=shuffle, initial_epoch=initial_epoch)
 ***************************************************************************"""
-model.fit_generator(generator=training_generator, validation_data=validation_generator)
+model.fit_generator(generator=training_generator, epochs=2, steps_per_epoch=10, validation_data=validation_generator)
