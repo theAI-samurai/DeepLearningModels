@@ -37,7 +37,7 @@ DeepLearningModels/
 path = 'D:/myProject/DeepLearningModels/'
 # Reading csv into Dataframe
 df_data = pd.read_csv(path+'map_traininglabels.csv')
-image_array(df_data)    # converting image files to ndarray
+#image_array(df_data)    # converting image files to ndarray
 path_change(df_data)    # saving new path of data files
 X_train, X_test, y_train, y_test = train_test_split(df_data['image_id'], df_data['Class'], test_size=0.25)
 
@@ -65,6 +65,9 @@ model.add(Conv2D(filters=32, kernel_size=(5, 5), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Flatten())
 model.add(Dense(2, activation='sigmoid'))
+
+model.summary()
+
 # Model Compilation
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 # Train model on dataset
@@ -131,3 +134,6 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
             workers=workers, use_multiprocessing=use_multiprocessing, shuffle=shuffle, initial_epoch=initial_epoch)
 ***************************************************************************"""
 model.fit_generator(generator=training_generator, epochs=2, validation_data=validation_generator)
+print("Training Completed")
+model.evaluate_generator(generator=validation_generator, verbose=1)
+print("Evaluation completed")
