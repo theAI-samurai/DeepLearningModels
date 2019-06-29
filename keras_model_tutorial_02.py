@@ -68,6 +68,9 @@ model.add(Dense(2, activation='sigmoid'))
 
 model.summary()
 
+# metrics involved in data
+print(model.metrics_names)
+
 # Model Compilation
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 # Train model on dataset
@@ -135,5 +138,7 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
 ***************************************************************************"""
 model.fit_generator(generator=training_generator, epochs=2, validation_data=validation_generator)
 print("Training Completed")
-model.evaluate_generator(generator=validation_generator, verbose=1)
+scores = model.evaluate_generator(generator=validation_generator, verbose=1)
 print("Evaluation completed")
+scores_ = model.predict_generator(generator=validation_generator, verbose=1)
+print("predicted on test data")
