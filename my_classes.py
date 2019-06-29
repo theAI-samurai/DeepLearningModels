@@ -47,13 +47,9 @@ class DataGenerator(keras.utils.Sequence):
 
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
-            print('---i--from classes', i)
-            print("ID form inside my_classes file", ID)
             # Store sample
             # X[i,] = np.load('data/' + ID + '.npy')
             X[i, ] = np.load(ID)
-
             # Store class
             y[i] = self.labels[ID]
-
         return X, keras.utils.to_categorical(y, num_classes=self.n_classes)

@@ -2,21 +2,43 @@ import os
 from keras.models import Sequential
 from sklearn.model_selection import train_test_split
 import pandas as pd
+import numpy as np
+from PIL import Image
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
+from DeepLearningModels.my_classes import  DataGenerator
 
-from my_classes import DataGenerator
 
+def image_array(df):
+    for i in range(len(df)):
+        new_path = path + 'map_images/' + df.loc[i, 'image_id']
+        temp = Image.open(new_path)
+        img_data = np.array(temp)
+        name = path + 'map_images/' + (df.loc[i, 'image_id'].split('.')[0] + '.npy')
+        np.save(name, img_data)
+        del [img_data, name, new_path, temp]
 
 
 def path_change(df):
     for i in range(len(df)):
-        df.loc[i, 'image_id']= path +'images/'+ df.loc[i, 'image_id']
+        new_path = path +'map_images/'+ df.loc[i, 'image_id']
+        name = path+'map_images/'+(df.loc[i, 'image_id'].split('.')[0]+'.npy')
+        df.loc[i, 'image_id'] = name
+        del [name, new_path]
 
 
-path = '/home/ankit/Downloads/DeepLearningModels/'
+# Put your root path here
+'''*******************************************************
+DeepLearningModels/
+                |____ keras_script.py
+                |____ my_classes.py
+                |____ my_images/ : all images here
+********************************************************'''
+path = 'D:/myProject/DeepLearningModels/'
+# Reading csv into Dataframe
 df_data = pd.read_csv(path+'map_traininglabels.csv')
-path_change(df_data)
+image_array(df_data)    # converting image files to ndarray
+path_change(df_data)    # saving new path of data files
 X_train, X_test, y_train, y_test = train_test_split(df_data['image_id'], df_data['Class'], test_size=0.25)
 
 # Parameters
@@ -26,7 +48,7 @@ params = {'dim': (256, 256), 'batch_size': 8, 'n_classes': 2, 'n_channels': 3, '
 partition = {'train': X_train.tolist(), 'validation': X_test.tolist()}
 df_ = df_data
 df_ = df_.drop(['score'], 1)
-labels = df_.set_index('image_id').T.to_dict('list')
+labels = df_.set_index('image_id').T.to_dict('records')[0]
 del [df_data , df_, X_train, X_test, y_train, y_test]
 
 # Generators
@@ -42,19 +64,13 @@ model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Conv2D(filters=32, kernel_size=(5, 5), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Flatten())
-model.add(Dense(1, activation='sigmoid'))
-
+model.add(Dense(2, activation='sigmoid'))
+# Model Compilation
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-
 # Train model on dataset
 """***************************************************************************
-    def fit_generator(self, generator, steps_per_epoch=None,
-                      epochs=1, verbose=1, callbacks=None,
-                      validation_data=None, validation_steps=None,
-                      class_weight=None, max_queue_size=10,
-                      workers=1, use_multiprocessing=False,
-                      shuffle=True, initial_epoch=0):
-    -------------Trains the model on data generated batch-by-batch by a Python generator(or an instance of `Sequence`).
+    def fit_generator(self, generator, steps_per_epoch=None, epochs=1, verbose=1, callbacks=None, validation_data=None, validation_steps=None, class_weight=None, max_queue_size=10, workers=1, use_multiprocessing=False, shuffle=True, initial_epoch=0):
+    ----------Trains the model on data generated batch-by-batch by a Python generator(or an instance of `Sequence`)-------------.
         The generator is run in parallel to the model, for efficiency. Suited if you have low memory
 
         The use of `keras.utils.Sequence` guarantees the ordering and guarantees the single use of every input per epoch
@@ -64,13 +80,9 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
         *generator: A generator or an instance of `Sequence`(`keras.utils.Sequence`) object in order to avoid
                 duplicate data when using multiprocessing.
                 The output of the generator must be either - a tuple `(inputs, targets)` - a tuple `(inputs, targets, sample_weights)`.
-                This tuple (a single output of the generator) makes a single batch. Therefore, all arrays in this tuple must have the same
-                length (equal to the size of this batch). Different batches may have different sizes. For example, the last batch of the epoch
-                is commonly smaller than the others, if the size of the dataset is not divisible by the batch size.
-                The generator is expected to loop over its data indefinitely. An epoch finishes when `steps_per_epoch`
-                batches have been seen by the model.
         *steps_per_epoch: Integer. Total number of steps (batches of samples) to yield from `generator` before declaring one epoch
-                finished and starting the next epoch. Optional for `Sequence`: if unspecified, will use the `len(generator)` as a number of steps.
+                Optional for `Sequence`: if unspecified, will use the `len(generator)` as a number of steps.
+                by default steps_per_epoch= len(tarining)/batch_size
         *epochs: Integer. Number of epochs to train the model. An epoch is an iteration over the entire data provided, as defined by `steps_per_epoch`.
         *verbose: Integer. 0, 1, or 2. Verbosity mode. 0 = silent, 1 = progress bar, 2 = one line per epoch.
         *callbacks: List of `keras.callbacks.Callback` instances.
@@ -118,4 +130,4 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
             validation_steps=validation_steps, class_weight=class_weight, max_queue_size=max_queue_size,
             workers=workers, use_multiprocessing=use_multiprocessing, shuffle=shuffle, initial_epoch=initial_epoch)
 ***************************************************************************"""
-model.fit_generator(generator=training_generator, epochs=2, steps_per_epoch=10, validation_data=validation_generator)
+model.fit_generator(generator=training_generator, epochs=2, validation_data=validation_generator)
