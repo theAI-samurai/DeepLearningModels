@@ -3,10 +3,12 @@ from keras.models import Sequential
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
+from time import time
 from PIL import Image
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from DeepLearningModels.my_classes import  DataGenerator
+from keras.callbacks import TensorBoard
 
 
 def image_array(df):
@@ -34,7 +36,7 @@ DeepLearningModels/
                 |____ my_classes.py
                 |____ my_images/ : all images here
 ********************************************************'''
-path = 'D:/myProject/DeepLearningModels/'
+path = '/home/ankit/Downloads/DeepLearningModels/'
 # Reading csv into Dataframe
 df_data = pd.read_csv(path+'map_traininglabels.csv')
 #image_array(df_data)    # converting image files to ndarray
@@ -69,10 +71,12 @@ model.add(Dense(2, activation='sigmoid'))
 model.summary()
 
 # metrics involved in data
-print(model.metrics_names)
+#print(model.metrics_names)
 
 # Model Compilation
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+# tensorboard callback
+tensorboard = TensorBoard(log_dir="logs/{}".format(time()))
 # Train model on dataset
 """***************************************************************************
     def fit_generator(self, generator, steps_per_epoch=None, epochs=1, verbose=1, callbacks=None, validation_data=None, validation_steps=None, class_weight=None, max_queue_size=10, workers=1, use_multiprocessing=False, shuffle=True, initial_epoch=0):
@@ -136,7 +140,7 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
             validation_steps=validation_steps, class_weight=class_weight, max_queue_size=max_queue_size,
             workers=workers, use_multiprocessing=use_multiprocessing, shuffle=shuffle, initial_epoch=initial_epoch)
 ***************************************************************************"""
-model.fit_generator(generator=training_generator, epochs=2, validation_data=validation_generator)
+model.fit_generator(generator=training_generator, epochs=2, validation_data=validation_generator, callbacks=[tensorboard])
 print("Training Completed")
 scores = model.evaluate_generator(generator=validation_generator, verbose=1)
 print("Evaluation completed")
