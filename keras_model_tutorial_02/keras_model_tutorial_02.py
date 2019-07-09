@@ -36,7 +36,7 @@ DeepLearningModels/
                 |____ my_classes.py
                 |____ my_images/ : all images here
 ********************************************************'''
-path = '/home/ankit/Downloads/DeepLearningModels/'
+path = 'D:/myProject/DeepLearningModels/'
 # Reading csv into Dataframe
 df_data = pd.read_csv(path+'map_traininglabels.csv')
 #image_array(df_data)    # converting image files to ndarray
