@@ -56,8 +56,7 @@ D_output_fake, D_logits_fake = discriminator(G, reuse=True)
 
 # defining the loss function
 def loss_func(logits_in, labels_in):
-    return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
-        logits=logits_in, labels=labels_in))
+    return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=logits_in, labels=labels_in))
 
 
 # Smoothing for generalization
