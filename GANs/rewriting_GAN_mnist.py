@@ -32,7 +32,6 @@ def discriminator(X, reuse=None):
         return output, logits
 
 # defining the loss function
-
 def loss_func(logits_in, labels_in):
     temp = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits_in, labels=labels_in)
     return tf.reduce_mean(temp)
@@ -58,51 +57,33 @@ D_trainer = tf.train.AdamOptimizer(lr).minimize(D_loss, var_list=d_vars)
 G_trainer = tf.train.AdamOptimizer(lr).minimize(G_loss, var_list=g_vars)
 
 batch_size = 100  # batch size
-epochs = 500  # number of epochs. The higher the better the result
+epochs = 50  # number of epochs. The higher the better the result
 init = tf.global_variables_initializer()
 
 # creating a session to train the networks
 samples = []  # generator examples
 
-'''
 with tf.Session() as sess:
-    #print('--------Entered at zone 1---------')
     sess.run(init)
-    #print('--------Entered at zone 2----sess initated-----')
     for epoch in range(epochs):
-        num_batches = mnist.train.num_examples // batch_size
-        print('------total batch----', num_batches)
-        for i in range(num_batches):
+        # diviiding MNIST dataset of 55000 images into 550 batches of 100 images each
+        batch_num = len(mnist.train.images) // batch_size
+        for i in range(batch_num):
+            # batch consist of array of 100 images and its label
+            # batch[0] :  images
+            # batch[1] :  labels
+            # 'next_batch' is a function that stores batch info
             batch = mnist.train.next_batch(batch_size)
-            batch_images = batch[0].reshape((batch_size, 784))
+            batch_images = batch[0]
+            # batch_labels = batch[1]
             batch_images = batch_images * 2 - 1
             batch_z = np.random.uniform(-1, 1, size=(batch_size, 100))
             _ = sess.run(D_trainer, feed_dict={real_images: batch_images, z: batch_z})
             _ = sess.run(G_trainer, feed_dict={z: batch_z})
-
         print("on epoch{}".format(epoch))
-
         sample_z = np.random.uniform(-1, 1, size=(1, 100))
-        gen_sample = sess.run(generator(z, reuse=True),
-                              feed_dict={z: sample_z})
-
+        gen_sample = sess.run(generator(z, reuse=True), feed_dict={z: sample_z})
         samples.append(gen_sample)
-
-    # result after 0th epoch
-'''
-with tf.Session() as sess:
-    sess.run(init)
-    # diviiding MNIST dataset of 55000 images into 550 batches of 100 images each
-    batch_num = mnist.train.num_examples // batch_size
-    for i in range(batch_num):
-        # batch consist of array of 100 images and its label
-        # batch[0] :  images
-        # batch[1] :  labels
-        batch = mnist.train.next_batch(batch_size)
-        print(len(batch[0]))
-
-    #batch_images = batch_[0].reshape((batch_size, 784))
-
 
 plt.imshow(samples[0].reshape(28, 28))
 
