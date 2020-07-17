@@ -18,3 +18,4 @@ https://drive.google.com/file/d/18-XchvcQcmLMkNXNoiFruZfx340hnaUR/view?usp=shari
 
 **"keras_model_tutorial_02.py"** is an attempt to improve the pipeline for training.
 In this pipeline we use _keras.fit_generator_ this helps us in a unique way as all the image data is not loaded into the memory before the training process.
+.
