@@ -1,0 +1,6 @@
+classes= 1
+train  = D:/darknet_test/ship/files/train.txt
+valid  = D:/darknet_test/ship/files/test.txt
+names = D:/darknet_fender_protection/ship/cfg/ship.names
+backup = D:/darknet_test/ship/backup
+#eval=coco

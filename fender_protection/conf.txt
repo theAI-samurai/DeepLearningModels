@@ -1,0 +1,26 @@
+[camera_1]
+feeder_path = D:/darknet_fender_protection/ship/test_data/video2.mp4
+param_id = 4
+
+[camera_2]
+feeder_path = D:/darknet_fender_protection/ship/test_data/outputFile.mp4
+param_id = 5
+
+[camera_3]
+feeder_path = D:/darknet_fender_protection/ship/test_data/outputFile.mp4
+param_id = 8
+
+[camera_4]
+feeder_path = D:/darknet_fender_protection/ship/test_data/oFile.mp4
+param_id = 9
+
+[RESOLUTION]
+WIDTH = 960
+HEIGHT = 576
+
+[GET_POST_URL]
+notification = http://localhost:3011/api/v1/notification/create
+markup = http://localhost:3011/api/v1/guard/drawing/
+ref = http://localhost:3011/api/v1/guard/video-snapshot/
+ref_ext = http://vmi317167.contaboserver.net/ship-detection-api/api/v1/guard/video-snapshot/
+cam_active_status = http://localhost:3011/api/v1/camerastatus/
