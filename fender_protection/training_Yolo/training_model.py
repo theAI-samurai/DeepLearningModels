@@ -17,6 +17,9 @@ TRAINING_DURATION_PERIOD = config.get('TRAINING_PERIOD', 'days')
 unknown_objects_folder = dir_of_file + '/ship/unknown_objects'
 train_file_path = dir_of_file + '/ship/cfg/train.txt'
 
+# Training Flag
+Flag = False
+
 
 def train_file_creation():
     if os.path.exists(train_file_path):
@@ -36,4 +39,14 @@ def train_file_creation():
     train_file.close()
 
 
-train_file_creation()
+def train_script():
+    train_file_creation()
+    os.system("darknet_11_0.exe detector train ship/cfg/ship.data ship/cfg/yolov3_full_ship.cfg ship/backup/yolov3_full_ship_last.weights -map")
+
+
+while not Flag:
+    curr_time = datetime.now()
+    if curr_time.hour > 0 and curr_time.hour < 5:
+        Flag = True
+        train_script()
+
