@@ -24,3 +24,6 @@ markup = http://localhost:3011/api/v1/guard/drawing/
 ref = http://localhost:3011/api/v1/guard/video-snapshot/
 ref_ext = http://vmi317167.contaboserver.net/ship-detection-api/api/v1/guard/video-snapshot/
 cam_active_status = http://localhost:3011/api/v1/camerastatus/
+
+[TRAINING_PERIOD]
+days = 7
